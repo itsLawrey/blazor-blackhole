@@ -1,0 +1,162 @@
+.game-page-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 90vh; /* Takes up almost full viewport height */
+    width: 100%;
+}
+
+
+
+.game-board {
+    /* Fluid width: max 80px per cell OR 95% of viewport width, whichever is smaller */
+    width: min(calc(var(--board-size) * 80px), 95vw);
+    display: grid;
+    /* Distribute available space equally among columns */
+    grid-template-columns: repeat(var(--board-size), 1fr);
+    gap: 2px;
+    background-color: #333;
+    padding: 5px;
+    margin: 20px auto;
+    box-shadow: 0 0 15px rgb(113, 75, 162); 
+}
+
+.game-cell {
+    /* Remove fixed size, let grid handle it */
+    width: 100%;
+    /* Ensure cells stay square */
+    aspect-ratio: 1;
+    background-color: #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+
+
+
+
+.cell-content {
+    width: 100%;
+    height: 100%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.cell-content.blue {
+    background-image: url('images/sprites/Blue.bmp');
+}
+
+.cell-content.red {
+    background-image: url('images/sprites/Red.bmp');
+}
+
+.game-cell.selected .cell-content.blue {
+    background-image: url('images/sprites/BlueSelected.bmp');
+}
+
+.game-cell.selected .cell-content.red {
+    background-image: url('images/sprites/RedSelected.bmp');
+}
+
+.cell-content.black {
+    background-image: url('images/sprites/Black.bmp');
+    width: 100%;
+    height: 100%;
+}
+
+@media (max-width: 600px) {
+    /* Fluid layout handles sizing now, no need for overrides */
+}
+
+.game-controls {
+    margin-bottom: 20px;
+    text-align: center; /* Helper for centering controls */
+    display: flex;
+    justify-content: center;
+}
+
+.game-menu {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 10px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    color: #333; /* Dark text for readability */
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.status-bar {
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.player-indicator {
+    padding: 2px 5px;
+    border-radius: 4px;
+}
+
+.player-indicator.red {
+    color: red;
+    font-weight: bold;
+}
+
+.player-indicator.blue {
+    color: blue;
+    font-weight: bold;
+}
+
+.game-title {
+    text-align: center;
+    margin-bottom: 20px;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+}
+
+.game-timer {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    margin-bottom: 15px;
+}
+
+.tutorial-section {
+    width: 95%; /* Provides margin on mobile */
+    max-width: 600px; /* Keep it readable */
+    margin: 20px auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tutorial-header {
+    background-color: #f0f0f0;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+}
+
+.tutorial-header:hover {
+    background-color: #e0e0e0;
+}
+
+.tutorial-content {
+    padding: 15px;
+    background-color: #fff;
+    border-top: 1px solid #ccc;
+}
+
+.tutorial-content p {
+    margin: 0;
+}

@@ -1,0 +1,167 @@
+@page "/game"
+@rendermode InteractiveServer
+@using BlackHole.Services.GameLogic.Model
+@using BlackHole.Services.GameLogic.Persistence
+
+<PageTitle>BlackHole</PageTitle>
+
+<div class="game-page-container">
+    <h1 class="game-title">BlackHole</h1>
+    <div class="game-timer">Time: @TimeDisplay</div>
+
+    @if (gameModel?.Table != null)
+    {
+        <div class="game-board" style="--board-size: @gameModel.TableSize;">
+            @for (int i = 0; i < gameModel.TableSize; i++)
+            {
+                @for (int j = 0; j < gameModel.TableSize; j++)
+                {
+                    int r = i;
+                    int c = j;
+                    var cellState = gameModel.Table.GetGameCellState(r, c);
+                    var isSelected = gameModel.Table.GetGameCellSelected(r, c);
+                    
+                    <div class="game-cell @(isSelected ? "selected" : "")" @onclick="() => OnCellClick(r, c)">
+                        <div class="cell-content @cellState.ToString().ToLower()"></div>
+                    </div>
+                }
+            }
+        </div>
+
+        @if (gameOver)
+        {
+            <div class="alert alert-success">
+                Game Over! Winner: @winner
+            </div>
+        }
+        else
+        {
+            <div class="status-bar">
+                Current Player: <span class="player-indicator @(currentPlayer == CellState.Red ? "red" : "blue")">@currentPlayer</span>
+            </div>
+        }
+
+        <div class="game-controls">
+            <div class="game-menu">
+                <label>Size: 
+                    <select @bind="boardSize">
+                        <option value="5">5x5</option>
+                        <option value="7">7x7</option>
+                        <option value="9">9x9</option>
+                    </select>
+                </label>
+                <button class="btn btn-primary" @onclick="StartNewGame">New Game</button>
+            </div>
+        </div>
+
+        <div class="tutorial-section">
+            <div class="tutorial-header" @onclick="ToggleTutorial">
+                Tutorial <span class="arrow">@(isTutorialOpen ? "▼" : "▶")</span>
+            </div>
+            @if (isTutorialOpen)
+            {
+                <div class="tutorial-content">
+                    <p>Command your fleet one ship at a time and escape through the black hole. 
+                    Ships can only move in four directions. The anomaly is messing with the controls, so they will fly until they hit something.
+                    You don't have time to save everyone. Get over half of your fleet through the black hole to win.</p>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private BlackholeGameModel? gameModel;
+    private int boardSize = 5;
+    private CellState currentPlayer = CellState.Blue;
+    private bool gameOver = false;
+    private CellState winner = CellState.None;
+    private bool isTutorialOpen = false;
+    private System.Timers.Timer? gameTimer;
+    private int elapsedSeconds;
+    
+    private string TimeDisplay => TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss");
+
+    private void ToggleTutorial()
+    {
+        isTutorialOpen = !isTutorialOpen;
+    }
+
+    protected override void OnInitialized()
+    {
+        // Initialize model. Pass null for data access as we don't have persistence yet.
+        gameModel = new BlackholeGameModel(null);
+        gameModel.CellChanged += OnCellChanged;
+        gameModel.PlayerChanged += OnPlayerChanged;
+        gameModel.GameOver += OnGameOver;
+        
+        gameTimer = new System.Timers.Timer(1000);
+        gameTimer.Elapsed += OnTimerElapsed;
+        gameTimer.AutoReset = true;
+        
+        StartNewGame();
+    }
+    
+    private void OnTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    {
+        elapsedSeconds++;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void StartNewGame()
+    {
+        gameOver = false;
+        winner = CellState.None;
+        
+        elapsedSeconds = 0;
+        gameTimer?.Stop();
+        gameTimer?.Start();
+        
+        gameModel?.NewGame(boardSize);
+        if (gameModel != null)
+        {
+            if(gameModel.Table != null)
+            {
+                 currentPlayer = gameModel.Table.Player;
+            }
+        }
+    }
+
+    private void OnCellClick(int r, int c)
+    {
+        if (!gameOver)
+        {
+            gameModel?.HandleGameCellClicked(r, c);
+        }
+    }
+
+    private void OnCellChanged(object? sender, BlackholeCellEventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private void OnPlayerChanged(object? sender, BlackholePlayerEventArgs e)
+    {
+        currentPlayer = e.Player;
+        StateHasChanged();
+    }
+
+    private void OnGameOver(object? sender, BlackholeGameEventArgs e)
+    {
+        winner = e.Winner;
+        gameOver = true;
+        gameTimer?.Stop();
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        if (gameModel != null)
+        {
+            gameModel.CellChanged -= OnCellChanged;
+            gameModel.PlayerChanged -= OnPlayerChanged;
+            gameModel.GameOver -= OnGameOver;
+        }
+        gameTimer?.Dispose();
+    }
+}
