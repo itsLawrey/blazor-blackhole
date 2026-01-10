@@ -1,5 +1,5 @@
 @page "/game"
-@rendermode InteractiveServer
+@page "/"
 @using BlackHole.Services.GameLogic.Model
 @using BlackHole.Services.GameLogic.Persistence
 
@@ -8,6 +8,8 @@
 <div class="game-page-container">
     <h1 class="game-title">BlackHole</h1>
     <div class="game-timer">Time: @TimeDisplay</div>
+
+
 
     @if (gameModel?.Table != null)
     {
@@ -77,7 +79,7 @@
     private bool gameOver = false;
     private CellState winner = CellState.None;
     private bool isTutorialOpen = false;
-    private System.Timers.Timer? gameTimer;
+    private System.Threading.Timer? gameTimer;
     private int elapsedSeconds;
     
     private string TimeDisplay => TimeSpan.FromSeconds(elapsedSeconds).ToString(@"mm\:ss");
@@ -95,14 +97,10 @@
         gameModel.PlayerChanged += OnPlayerChanged;
         gameModel.GameOver += OnGameOver;
         
-        gameTimer = new System.Timers.Timer(1000);
-        gameTimer.Elapsed += OnTimerElapsed;
-        gameTimer.AutoReset = true;
-        
         StartNewGame();
     }
     
-    private void OnTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    private void OnTimerElapsed(object? state)
     {
         elapsedSeconds++;
         InvokeAsync(StateHasChanged);
@@ -114,8 +112,8 @@
         winner = CellState.None;
         
         elapsedSeconds = 0;
-        gameTimer?.Stop();
-        gameTimer?.Start();
+        gameTimer?.Dispose();
+        gameTimer = new System.Threading.Timer(OnTimerElapsed, null, 1000, 1000);
         
         gameModel?.NewGame(boardSize);
         if (gameModel != null)
@@ -150,7 +148,7 @@
     {
         winner = e.Winner;
         gameOver = true;
-        gameTimer?.Stop();
+        gameTimer?.Change(Timeout.Infinite, Timeout.Infinite);
         StateHasChanged();
     }
 

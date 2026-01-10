@@ -1,17 +1,26 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+    <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0" PrivateAssets="all" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="BlackHoleGame\**" />
     <Content Remove="BlackHoleGame\**" />
     <EmbeddedResource Remove="BlackHoleGame\**" />
     <None Remove="BlackHoleGame\**" />
+    <Compile Remove="release\**" />
+    <Content Remove="release\**" />
+    <EmbeddedResource Remove="release\**" />
+    <None Remove="release\**" />
   </ItemGroup>
 
 </Project>

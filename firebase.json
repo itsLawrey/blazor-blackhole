@@ -2,7 +2,7 @@
 {
   "hosting": {
     "target": "blazor-app",
-    "public": "bin/Release/net8.0/publish/wwwroot",
+    "public": "release/wwwroot",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [{ "source": "**", "destination": "/index.html" }],
     "headers": [
