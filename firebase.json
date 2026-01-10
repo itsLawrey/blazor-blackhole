@@ -1,0 +1,23 @@
+
+{
+  "hosting": {
+    "target": "blazor-app",
+    "public": "bin/Release/net8.0/publish/wwwroot",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [{ "source": "**", "destination": "/index.html" }],
+    "headers": [
+      {
+        "source": "**/*.{wasm,dll,js,json,br,gz}",
+        "headers": [
+          { "key": "Cache-Control", "value": "max-age=31536000" },
+          { "key": "Cross-Origin-Embedder-Policy", "value": "require-corp" },
+          { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" }
+        ]
+      },
+      {
+        "source": "index.html",
+        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+      }
+    ]
+  }
+}
