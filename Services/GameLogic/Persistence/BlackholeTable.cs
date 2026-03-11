@@ -116,8 +116,5 @@ namespace BlackHole.Services.GameLogic.Persistence
 
         #endregion
 
-        #region private methods
-
-        #endregion
     }
 }

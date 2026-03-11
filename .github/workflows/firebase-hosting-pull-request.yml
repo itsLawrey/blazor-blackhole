@@ -12,12 +12,23 @@ jobs:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - run: dotnet publish -c Release
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+      - name: 📂 Checkout code
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x' # Updated for your .NET 10 environment
+
+      - name: 🛠️ Build & Publish
+        # Matches the release folder we defined in your merge workflow
+        run: dotnet publish -c Release -o release
+
+      - name: 🚀 Deploy Preview to Firebase
+        uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ITSLAWREY_FLUTTER_DEMOS }}
           projectId: itslawrey-flutter-demos
-          target: blazor-app # Matches your target in Phase 2
-          
+          target: blazor-app
+          # NOTE: channelId is removed here to auto-generate a preview URL
