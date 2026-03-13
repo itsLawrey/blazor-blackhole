@@ -6,7 +6,7 @@
 
 ## Visuals
 
-https://github.com/itsLawrey/blazor-blackhole/tree/main/assets/blackhole_compressed.mp4
+![App Demonstration](assets/blackhole.gif)
 
 ## Tech Stack
 
